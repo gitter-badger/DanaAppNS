@@ -14,14 +14,14 @@ public class MsgCarbsEntry extends DanaRMessage {
         SetCommand(SerialParam.CTRL_CMD_HIST);
         SetSubCommand(SerialParam.CTRL_CMD_HIST_SUB_ENTRY);
 
-        SetParamByte((byte) (8 & 255)); //RecType
+        SetParamByte((byte) (SerialParam.RECORD_TYPE_CARBO & 0xff)); //RecType
         SetParamByte((byte) (time.get(Calendar.YEAR) % 100));
         SetParamByte((byte) (time.get(Calendar.MONTH) + 1));
         SetParamByte((byte) (time.get(Calendar.DAY_OF_MONTH)));
         SetParamByte((byte) (time.get(Calendar.HOUR_OF_DAY)));
         SetParamByte((byte) (time.get(Calendar.MINUTE)));
         SetParamByte((byte) (time.get(Calendar.SECOND)));
-        SetParamByte((byte) (67 & 255)); //??
+        SetParamByte((byte) (0x43 & 0xff)); //??
         SetParamInt(amount);
 
         log.debug("CarbsEntry amount:"+amount+" time:"+time);

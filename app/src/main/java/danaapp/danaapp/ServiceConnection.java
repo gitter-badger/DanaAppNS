@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.support.v7.app.NotificationCompat;
 import com.squareup.otto.Subscribe;
 
+import danaapp.danaapp.NS.NSClient;
 import danaapp.danaapp.event.ConnectionStatusEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,7 @@ public class ServiceConnection extends Service {
     private NotificationManager mNotificationManager;
     private NotificationCompat.Builder mNotificationCompatBuilder;
     private DanaConnection mDanaConnection;
+    private NSClient mNSClient;
 
     @Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
@@ -48,6 +50,10 @@ public class ServiceConnection extends Service {
             if(mDanaConnection==null) {
                 mDanaConnection = new DanaConnection(null,MainApp.bus());
                 MainApp.setDanaConnection(mDanaConnection);
+            }
+            if(mNSClient==null) {
+                mNSClient = new NSClient(MainApp.bus());
+                MainApp.setNSClient(mNSClient);
             }
         }
 
@@ -97,7 +103,7 @@ public class ServiceConnection extends Service {
 
     private void nortifManagerNotify() {
         mNotificationManager = (NotificationManager)getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(129,mNotification);
+        mNotificationManager.notify(129, mNotification);
     }
 
     @Subscribe
@@ -110,8 +116,8 @@ public class ServiceConnection extends Service {
                 connectionText = "Connected";
             } else {
                 connectionText = "Disconnected";
-}
-          }
+            }
+        }
 //        mNotification.tickerText = connectionText;
 //        mNotification.when = System.currentTimeMillis();;
 
@@ -122,6 +128,7 @@ public class ServiceConnection extends Service {
         mNotification = mNotificationCompatBuilder.build();
         nortifManagerNotify();
     }
+
 
     @Subscribe
     public void onStopEvent(StopEvent event) {

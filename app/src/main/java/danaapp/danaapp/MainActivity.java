@@ -2,7 +2,6 @@ package danaapp.danaapp;
 
 import android.app.Activity;
 import android.app.AlarmManager;
-import android.app.FragmentManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -24,17 +23,19 @@ import com.joanzapata.iconify.Iconify;
 import com.joanzapata.iconify.fonts.FontAwesomeModule;
 import com.squareup.otto.Subscribe;
 
+import danaapp.danaapp.NS.NSStatusEvent;
 import danaapp.danaapp.bolus.BolusArrayAdapter;
 import danaapp.danaapp.bolus.BolusDialogFragment;
 import danaapp.danaapp.bolus.BolusUI;
 import danaapp.danaapp.calc.IobCalc;
-import danaapp.danaapp.carbs.CarbsDialogFragment;
 import danaapp.danaapp.db.Bolus;
 import danaapp.danaapp.db.DatabaseHelper;
 import danaapp.danaapp.db.TempBasal;
 import danaapp.danaapp.event.ConnectionStatusEvent;
 import danaapp.danaapp.event.LowSuspendStatus;
+import danaapp.danaapp.NS.NSCommandEvent;
 import danaapp.danaapp.tempBasal.TempBasalArrayAdapter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +55,7 @@ import danaapp.danaapp.event.StatusEvent;
 import danaapp.danaapp.event.StopEvent;
 
 public class MainActivity extends Activity
-        implements BolusDialogFragment.Communicator, CarbsDialogFragment.Communicator {
+        implements BolusDialogFragment.Communicator {
     private static Logger log = LoggerFactory.getLogger(MainActivity.class);
 
     DecimalFormat formatNumber1place = new DecimalFormat("0.00");
@@ -73,13 +74,14 @@ public class MainActivity extends Activity
     TextView iob;
     TextView basalIob;
     TextView connection;
+    TextView nsConnection;
 
 
     ListView bolusListView;
     ListView tempBasalListView;
 
     Button tbButton;
-    Button carbsButton;
+    Button testButton;
     NavigationView mNavigationView;
 
     DrawerLayout mDrawerLayout;
@@ -89,9 +91,11 @@ public class MainActivity extends Activity
     private BolusUI bolusUI;
     private TextView lowSuspendData;
     private TextView lowSuspendStatus;
-    private TextView lowSuspendDataTextOpenAps;
+    private TextView openApsStatus;
     private Switch switchOpenAPS;
     private Switch switchLowSuspend;
+
+    private String mBTStatus = "";
 
 
     private void initNavDrawer() {
@@ -183,10 +187,12 @@ public class MainActivity extends Activity
         });
 
         lowSuspendData = (TextView) findViewById(R.id.lowSuspendData);
-        lowSuspendDataTextOpenAps = (TextView) findViewById(R.id.lowSuspendStatusTextOpenAps);
+        openApsStatus = (TextView) findViewById(R.id.openApsStatus);
         lowSuspendStatus = (TextView) findViewById(R.id.lowSuspendStatus);
         switchLowSuspend = (Switch) findViewById(R.id.switchLowSuspend);
         switchOpenAPS = (Switch) findViewById(R.id.switchOpenAPS);
+
+        nsConnection = (TextView) findViewById(R.id.nsConnection);
 
         boolean openAPSenabled = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("OpenAPSenabled", false);
         switchOpenAPS.setChecked(openAPSenabled);
@@ -195,7 +201,7 @@ public class MainActivity extends Activity
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 SharedPreferences.Editor editor = preferences.edit();
-                editor.putBoolean("OpenAPSenabled",isChecked);
+                editor.putBoolean("OpenAPSenabled", isChecked);
                 editor.commit();
 
             }
@@ -208,9 +214,44 @@ public class MainActivity extends Activity
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 SharedPreferences.Editor editor = preferences.edit();
-                editor.putBoolean("LowSuspendEnabled",isChecked);
+                editor.putBoolean("LowSuspendEnabled", isChecked);
                 editor.commit();
 
+            }
+        });
+
+        testButton = (Button) findViewById(R.id.testButton);
+
+
+        testButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+/*
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        JSONObject data = new JSONObject();
+                        try {
+                            data.put("insulin", 1);
+                        } catch (JSONException e) {
+                            return;
+                        }
+
+                        NSAck ack = new NSAck();
+
+                        MainApp.getNSClient().sendAddTreatment(data, ack);
+                        log.debug(ack._id);
+                    }
+                });
+*/
+                DanaConnection dc = MainApp.getDanaConnection();
+                dc.connectIfNotConnected("testButton");
+                int number = MainApp.getConNumber();
+                log.debug("loadHistory " + number);
+                try {
+                    dc.historyTempBasal(number);
+                } catch (Exception e) {
+                }
             }
         });
 
@@ -240,17 +281,8 @@ public class MainActivity extends Activity
             }
         });
 
-        carbsButton = (Button) findViewById(R.id.carbsButton);
-
-        carbsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FragmentManager manager = getFragmentManager();
-                CarbsDialogFragment carbsDialogFragment = new CarbsDialogFragment();
-                carbsDialogFragment.show(manager, "CarbsDialog");
-            }
-        });
     }
+
 
     private void updateTempBasalUI() {
         List<TempBasal> tempBasalList = loadTempBasalsDB();
@@ -387,7 +419,7 @@ public class MainActivity extends Activity
         AlarmManager am = ( AlarmManager ) getSystemService(Context.ALARM_SERVICE);
 
         Intent intent = new Intent( "danaapp.danaapp.ReceiverKeepAlive.action.PING"  );
-        PendingIntent pi = PendingIntent.getBroadcast( this, 0, intent, 0 );
+        PendingIntent pi = PendingIntent.getBroadcast(this, 0, intent, 0);
 
         am.cancel(pi);
     }
@@ -411,7 +443,7 @@ public class MainActivity extends Activity
 
         List<ResolveInfo> queryBroadcastReceivers = getPackageManager().queryBroadcastReceivers(intent, 0);
 
-        log.debug("queryBroadcastReceivers "+queryBroadcastReceivers);
+        log.debug("queryBroadcastReceivers " + queryBroadcastReceivers);
 
     }
 
@@ -420,24 +452,24 @@ public class MainActivity extends Activity
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                uRemaining.setText(formatNumber1place.format(ev.remainUnits)+"u");
+
+                uRemaining.setText(formatNumber1place.format(ev.remainUnits) + "u");
                 updateBatteryStatus(ev);
 
-
-                currentBasal.setText(formatNumber1place.format(ev.currentBasal)+"u/h");
-                tempBasalRemain.setText((ev.tempBasalRemainMin/60)+ ":"+ev.tempBasalRemainMin%60);
+                currentBasal.setText(formatNumber1place.format(ev.currentBasal) + "u/h");
+                tempBasalRemain.setText((ev.tempBasalRemainMin / 60) + ":" + ev.tempBasalRemainMin % 60);
 
                 lastBolusAmount.setText(formatNumber1place.format(ev.last_bolus_amount));
                 lastBolusTime.setText(formatDateToJustTime.format(ev.last_bolus_time));
 
                 long checkMinsAgo = ((new Date()).getTime() - ev.timeLastSync.getTime()) / 60_000;
-                if(checkMinsAgo>999) checkMinsAgo=999;
+                if (checkMinsAgo > 999) checkMinsAgo = 999;
                 lastCheck.setText(
                         formatDateToJustTime.format(ev.timeLastSync)
-                        + " "
-                        + checkMinsAgo
-                        );
-                if(ev.tempBasalRatio!=-1) {
+                                + " "
+                                + checkMinsAgo
+                );
+                if (ev.tempBasalRatio != -1) {
                     tempBasalRatio.setText(ev.tempBasalRatio + "%");
                     tbButton.setText("STOP");
                 } else {
@@ -446,34 +478,37 @@ public class MainActivity extends Activity
                 }
 
                 updateLowSuspendData();
+
+                if (MainApp.getNSClient() != null) MainApp.getNSClient().sendStatus(ev, mBTStatus);
             }
         });
     }
 
     private void updateBatteryStatus(StatusEvent ev) {
-        batteryStatus.setText("{fa-battery-"+(ev.remainBattery/25)+"}");
+        batteryStatus.setText("{fa-battery-" + (ev.remainBattery / 25) + "}");
     }
 
     private void updateLowSuspendData() {
         LowSuspendStatus lowSuspendStatusRef = LowSuspendStatus.getInstance();
         lowSuspendData.setText(lowSuspendStatusRef.dataText);
-        lowSuspendDataTextOpenAps.setText(lowSuspendStatusRef.lowSuspendDataTextOpenAps);
+        openApsStatus.setText(lowSuspendStatusRef.lowSuspendDataTextOpenAps);
         lowSuspendStatus.setText(lowSuspendStatusRef.statusText);
     }
 
     @Override
-    public void bolusDialogDeliver(final double amount) {
+    public void bolusDialogDeliver(final double amount, final String _id) {
 
         mHandler.post(new Runnable() {
             @Override
             public void run() {
                 DanaConnection dc = MainApp.getDanaConnection();
+                MainApp.getNSClient().sendTreatmentStatusUpdate(_id, "Connecting");
                 dc.connectIfNotConnected("bolusDialogDeliver");
                 bolusUI.bolusStart(amount);
                 try {
-                    dc.bolus((int) (bolusUI.bolusAmount*100),bolusUI);
+                    dc.bolus((int) (bolusUI.bolusAmount * 100), bolusUI, _id);
                 } catch (Exception e) {
-                    log.error(e.getMessage(),e);
+                    log.error(e.getMessage(), e);
                 }
             }
         });
@@ -494,38 +529,49 @@ public class MainActivity extends Activity
 
 
 
-    @Override
-    public void carbsDialogDeliver(final int amount) {
-
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                DanaConnection dc = MainApp.getDanaConnection();
-                dc.connectIfNotConnected("carbsDialogDeliver");
-                try {
-                    dc.carbsEntry( amount);
-                } catch (Exception e) {
-                    log.error(e.getMessage(),e);
-                }
-            }
-        });
-
+    @Subscribe
+    public void onStatusEvent(final ConnectionStatusEvent c) {
+        runOnUiThread(new Runnable() {
+                          @Override
+                          public void run() {
+                              if (c.sConnecting) {
+                                  connection.setText("{fa-bluetooth-b spin} " + c.sConnectionAttemptNo);
+                                  mBTStatus = "Connecting " + +c.sConnectionAttemptNo;
+                              } else {
+                                  if (c.sConnected) {
+                                      connection.setText("{fa-bluetooth}");
+                                      mBTStatus = "Connected";
+                                  } else {
+                                      connection.setText("{fa-bluetooth-b}");
+                                      mBTStatus = "Disconnected";
+                                  }
+                              }
+                          }
+                      }
+        );
 
     }
 
     @Subscribe
-    public void onStatusEvent(final ConnectionStatusEvent c) {
+    public void onStatusEvent(final NSStatusEvent e) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if(c.sConnecting) {
-                    connection.setText("{fa-bluetooth-b spin} "+c.sConnectionAttemptNo);
-                } else {
-                    if (c.sConnected) {
-                        connection.setText("{fa-bluetooth}");
-                    } else {
-                        connection.setText("{fa-bluetooth-b}");
-                    }
+                nsConnection.setText(e.status);
+            }
+          }
+        );
+
+    }
+
+    @Subscribe
+    public void onStatusEvent(final NSCommandEvent e) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                if (e.sCommand == "bolus") {
+                    bolusDialogDeliver(e.sValue, e.s_id);
                 }
             }
           }
@@ -586,6 +632,13 @@ public class MainActivity extends Activity
 //                    MainApp.instance().getApplicationContext().startService(alarmServiceIntent);
 //                    break;
 //                }
+
+                case R.id.nav_preferences: {
+                    log.debug("Opening preferences activity");
+                    Intent i = new Intent(MainApp.instance().getApplicationContext(), Preferences.class);
+                    startActivity(i);
+                    break;
+                }
 
                 case R.id.nav_exit: {
                     log.debug("Exiting");

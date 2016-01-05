@@ -114,11 +114,14 @@ public class SerialEngine extends Thread {
                             }
 
                             danaRMessage.handleMessage(responseMessageBytes);
+                            danaRMessage.responses--;
 
-                            pendingMessages.remove(command);
+                            if (danaRMessage.responses==0) {
+                                pendingMessages.remove(command);
 
-                            synchronized (danaRMessage) {
-                                danaRMessage.notify();
+                                synchronized (danaRMessage) {
+                                    danaRMessage.notify();
+                                }
                             }
                         }
                     }

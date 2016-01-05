@@ -8,7 +8,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.*;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import android.widget.Toast;
@@ -54,6 +56,9 @@ public class DanaConnection {
 
     private static final UUID SPP_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
 
+    SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(MainApp.instance().getApplicationContext());
+    String devName = SP.getString("danar_bt_name", "");
+
     public DanaConnection(BluetoothDevice bDevice, Bus bus) {
         MainApp.setDanaConnection(this);
 
@@ -71,7 +76,7 @@ public class DanaConnection {
 
             for (BluetoothDevice device : devices) {
                 String dName = device.getName();
-                if (Settings.DEV_NAME.equals(dName)) {
+                if (devName.equals(dName)) {
                     device.getAddress();
                     mDevice = device;
 
@@ -127,7 +132,7 @@ public class DanaConnection {
         };
         MainApp.instance().getApplicationContext().registerReceiver(receiver,new IntentFilter(BluetoothDevice.ACTION_ACL_CONNECTED));
         MainApp.instance().getApplicationContext().registerReceiver(receiver,new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED));
-        MainApp.instance().getApplicationContext().registerReceiver(receiver,new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED));
+        MainApp.instance().getApplicationContext().registerReceiver(receiver, new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED));
     }
 
     public void connectionCheckAsync(final String callerName) {
@@ -136,7 +141,7 @@ public class DanaConnection {
             public void run() {
                 connectionCheck(callerName);
             }
-        },100);
+        }, 100);
     }
 
     public synchronized void connectIfNotConnected(String callerName) {
@@ -161,7 +166,7 @@ public class DanaConnection {
             }
             log.debug("connectIfNotConnected took " + timeToConnectTimeSoFar + "s attempts:" + connectionAttemptCount);
         } else {
-            mBus.post(new ConnectionStatusEvent(false,true, 0));
+            mBus.post(new ConnectionStatusEvent(false, true, 0));
         }
         mWakeLock.release();
     }
@@ -372,7 +377,7 @@ public class DanaConnection {
         PreparedQuery<TempBasal> preparedQuery = queryBuilder.prepare();
         tempBasal = daoTempBasals.queryForFirst(preparedQuery);
 
-        log.info("tempBasal.timeStart found last in DB "+tempBasal.timeStart );
+        log.info("tempBasal.timeStart found last in DB " + tempBasal.timeStart);
 
         return tempBasal;
     }
@@ -399,10 +404,10 @@ public class DanaConnection {
         if(mSerialEngine!=null) mSerialEngine.stopIt();
     }
 
-    public void bolus(int amount, BolusUI bolusUI) throws Exception {
-        MsgBolusStart msg = new MsgBolusStart(amount);
-        MsgBolusProgress progress = new MsgBolusProgress(bolusUI);
-        MsgBolusStop stop = new MsgBolusStop(bolusUI);
+    public void bolus(int amount, BolusUI bolusUI, String _id) throws Exception {
+        MsgBolusStart msg = new MsgBolusStart(amount, _id);
+        MsgBolusProgress progress = new MsgBolusProgress(bolusUI, amount, _id);
+        MsgBolusStop stop = new MsgBolusStop(bolusUI, _id);
 
         mSerialEngine.expectMessage(progress);
         mSerialEngine.expectMessage(stop);
@@ -416,8 +421,24 @@ public class DanaConnection {
         pingStatus();
     }
 
+    public void historyBolus(int param) throws Exception {
+        MsgHistoryBolus msg = new MsgHistoryBolus(param);
+
+        mSerialEngine.sendMessage(msg);
+
+        //pingStatus();
+    }
+
+    public void historyTempBasal(int param) throws Exception {
+        MsgHistoryTempBasal msg = new MsgHistoryTempBasal(param);
+
+        mSerialEngine.sendMessage(msg);
+
+        //pingStatus();
+    }
+
     public void bolusStop( BolusUI bolusUI) throws Exception {
-        MsgBolusStop stop = new MsgBolusStop(bolusUI);
+        MsgBolusStop stop = new MsgBolusStop(bolusUI, null);
         mSerialEngine.sendMessage(stop);
         while(!stop.stopped) {
             mSerialEngine.sendMessage(stop);

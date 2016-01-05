@@ -54,7 +54,7 @@ public class BolusDialogFragment extends DialogFragment implements OnClickListen
                     this.amount.setText("");
                 } else {
                     dismiss();
-                    communicator.bolusDialogDeliver(amount);
+                    communicator.bolusDialogDeliver(amount, null);
                 }
                 break;
         }
@@ -62,7 +62,7 @@ public class BolusDialogFragment extends DialogFragment implements OnClickListen
     }
 
     public interface Communicator {
-        void bolusDialogDeliver(double amount);
+        void bolusDialogDeliver(double amount, String _id);
     }
 
 }

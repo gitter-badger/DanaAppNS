@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:key="danar"
+        android:title="Pump settings">
+
+        <EditTextPreference
+            android:title="DanaR BT name"
+            android:key="danar_bt_name"
+            android:dialogTitle="Enter your DanaR bluetooth name"
+            android:dialogMessage="This is you DanaR Bluetooth name you can find in bluetooth paired devices."
+            android:defaultValue=""
+            android:inputType="text">
+        </EditTextPreference>
+
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

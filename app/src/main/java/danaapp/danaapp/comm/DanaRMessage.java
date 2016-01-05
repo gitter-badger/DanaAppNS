@@ -5,10 +5,18 @@ import danaapp.danaapp.CRC;
 
 import java.util.Arrays;
 
+/*
+ *  00  01   02  03   04   05  06
+ *
+ *  7E  7E  len  F1  CMD  SUB data CRC CRC 2E  2E
+ */
+
 public class DanaRMessage {
     private String messageName;
     private byte[] bufferW = new byte[512];
     private byte cursorW = (byte) 6;
+
+    public int responses = 1;
 
     public boolean failed = false;
 
@@ -30,20 +38,20 @@ public class DanaRMessage {
     }
 
     public byte[] getMessageBytes() {
-        this.bufferW[0] = (byte) 126;
-        this.bufferW[1] = (byte) 126;
+        this.bufferW[0] = (byte) 0x7E;
+        this.bufferW[1] = (byte) 0x7E;
 
         byte length = (byte) (this.cursorW - 3);
 
         this.bufferW[2] = length;
-        this.bufferW[3] = (byte) 241;
+        this.bufferW[3] = (byte) 0xf1;
 
         //Array.Copy((Array) this.bufferW, 4, (Array) new byte[(int) length], 0, (int) length);
 
         this.SetParamInt(CRC.getCrc16(this.bufferW, 3, length));
 
-        this.bufferW[5 + (int) length] = (byte) 46;
-        this.bufferW[6 + (int) length] = (byte) 46;
+        this.bufferW[5 + (int) length] = (byte) 0x2E;
+        this.bufferW[6 + (int) length] = (byte) 0x2E;
 
         return Arrays.copyOf(bufferW, length + 7);
     }
@@ -64,7 +72,7 @@ public class DanaRMessage {
     }
 
     public int getCommand() {
-        int command = (bufferW[5] & 255) | ((bufferW[4] << 8) & 65280);
+        int command = (bufferW[5] & 255) | ((bufferW[4] << 8) & 0xff00);
         return command;
     }
 

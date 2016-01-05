@@ -29,4 +29,10 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.7.12'
     compile 'com.eclipsesource.j2v8:j2v8:3.1.6@aar'
     compile 'com.joanzapata.iconify:android-iconify-fontawesome:2.1.1'
+    compile ('io.socket:socket.io-client:0.6.3') {
+        // excluding org.json which is provided by Android
+        exclude group: 'org.json', module: 'json'
+    }
+    compile 'com.google.guava:guava:11.0'
+
 }

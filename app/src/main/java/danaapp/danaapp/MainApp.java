@@ -2,12 +2,11 @@ package danaapp.danaapp;
 
 import android.app.Application;
 
-import android.content.Context;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
-import com.j256.ormlite.logger.LoggerFactory;
 import com.squareup.otto.Bus;
 import com.squareup.otto.ThreadEnforcer;
 
+import danaapp.danaapp.NS.NSClient;
 import danaapp.danaapp.db.DatabaseHelper;
 
 
@@ -19,6 +18,13 @@ public class MainApp  extends Application {
 
     private static DatabaseHelper databaseHelper = null;
     private static DanaConnection sDanaConnection = null;
+    private static NSClient nsClient = null;
+
+    // just for test button
+    public static int connumber = 0;
+    public static int getConNumber() {
+        return connumber++;
+    }
 
     @Override
     public void onCreate() {
@@ -63,6 +69,14 @@ public class MainApp  extends Application {
 
     public static void setDanaConnection(DanaConnection con) {
         sDanaConnection = con;
+    }
+
+    public static NSClient getNSClient() {
+        return nsClient;
+    }
+
+    public static void setNSClient(NSClient client) {
+        nsClient = client;
     }
 
 

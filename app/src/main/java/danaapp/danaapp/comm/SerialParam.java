@@ -14,17 +14,17 @@ public class SerialParam {
     public static byte RECORD_TYPE_TB = (byte) 13;
 
     public static byte CTRL_CMD_BOLUS = (byte) 1;
-    public static byte CTRL_SUB_BOLUS_START = (byte) 2;
     public static byte CTRL_SUB_BOLUS_STOP = (byte) 1;
+    public static byte CTRL_SUB_BOLUS_START = (byte) 2;
     public static byte CTRL_SUB_BOLUS_START_NONE = (byte) 3;
 
     public static byte CTRL_CMD_STATUS = (byte) 2;
-    public static byte CTRL_SUB_STATUS_INIT = (byte) 10;    // CMD_PUMP_INITVIEW_I 522
+    public static byte CTRL_SUB_STATUS_BOLUS_PROGRESS = (byte) 2; // CMD_PUMP_THIS_REMAINDER_MEAL_INS
     public static byte CTRL_SUB_STATUS_CARBO = (byte) 4;
     public static byte CTRL_SUB_STATUS_TEMPBASAL = (byte) 5;
     public static byte CTRL_SUB_STATUS_EXTBOLUS = (byte) 7;
+    public static byte CTRL_SUB_STATUS_INIT = (byte) 10;    // CMD_PUMP_INITVIEW_I 522
     public static byte CTRL_SUB_STATUS_PUMP = (byte) 11; // CMD_PUMP_STATUS 523
-    public static byte CTRL_SUB_STATUS_BOLUS_PROGRESS = (byte) 2; // CMD_PUMP_THIS_REMAINDER_MEAL_INS
 
     public static byte CTRL_CMD_TB = (byte) 4;
     public static byte CTRL_SUB_TB_START = (byte) 1;
@@ -41,11 +41,12 @@ public class SerialParam {
     public static byte CTRL_SUB_SUSPEND_ON = (byte) 4;
     public static byte CTRL_SUB_SUSPEND_OFF = (byte) 5;
 
-    public static byte CTRL_CMD_COMM = (byte) 48;
+    public static byte CTRL_CMD_COMM = (byte) 0x30;
     public static byte CTRL_SUB_COMM_CONNECT = (byte) 1;
     public static byte CTRL_SUB_COMM_DISCONNECT = (byte) 2;
 
-    public static byte DOWNLOAD_CMD = (byte) 49;
+    public static byte CTRL_CMD_HISPAGE = (byte) 0x05;
+    public static byte DOWNLOAD_CMD = (byte) 0x31; // no respond on this message
     public static byte DOWNLOAD_SUB_BOLUS = (byte) 1;
     public static byte DOWNLOAD_SUB_DAILY = (byte) 2;
     public static byte DOWNLOAD_SUB_PRIME = (byte) 3;

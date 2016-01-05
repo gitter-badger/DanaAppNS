@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string-array name="ns_sync_profile_values">
+        <item>None</item>
+        <item>NS -> Pump</item>
+        <item>Pump -> NS</item>
+    </string-array>
+</resources>

@@ -30,4 +30,19 @@
         <item>200%</item>
     </string-array>
 
+    <string name="ns_api_title">Nightscout connection</string>
+    <string name="ns_enable_title">Connect to Nightscout</string>
+    <string name="ns_url_title">Nightscout URL</string>
+    <string name="ns_url_dialogtitle">Enter your Nightscout URL</string>
+    <string name="ns_url_dialogmessage">This only the base URL</string>
+    <string name="ns_api_secret_title">Nightscout API secret</string>
+    <string name="ns_api_secret_dialogtitle">Enter your Nightscout API_SECRET</string>
+    <string name="ns_api_secret_dialogmessage">API_SECRET on the server should match yourpassphrase in this setting.</string>
+    <string name="ns_accept_commands_title">Accept commands for pump</string>
+
+    <string name="ns_sync_title">Nightscout synchronization</string>
+    <string name="ns_sync_profile_title">Synchronize profile</string>
+    <string name="ns_sync_upload_treatments_title">Upload treatments</string>
+    <string name="title_activity_pump_control">PumpControlActivity</string>
+
 </resources>

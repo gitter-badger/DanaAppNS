@@ -1,5 +1,6 @@
 package danaapp.danaapp.comm;
 
+import danaapp.danaapp.MainApp;
 import danaapp.danaapp.bolus.BolusUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,6 +8,7 @@ import org.slf4j.LoggerFactory;
 public class MsgBolusStop extends DanaRMessage {
     private static Logger log = LoggerFactory.getLogger(MsgBolusStop.class);
     private BolusUI bolusUI;
+    private String _id;
 
     public boolean stopped = false;
 
@@ -20,9 +22,10 @@ public class MsgBolusStop extends DanaRMessage {
         super(cmdName);
     }
 
-    public MsgBolusStop(BolusUI bolusUI) {
+    public MsgBolusStop(BolusUI bolusUI, String _id) {
         this();
         this.bolusUI = bolusUI;
+        this._id = _id;
     }
 
 
@@ -30,6 +33,7 @@ public class MsgBolusStop extends DanaRMessage {
 
         stopped = true;
         bolusUI.bolusFinished();
+        MainApp.getNSClient().sendTreatmentStatusUpdate(this._id, "Delivered");
     }
 
 

@@ -1,12 +1,19 @@
 package danaapp.danaapp.comm;
 
+import danaapp.danaapp.MainApp;
 import danaapp.danaapp.bolus.BolusUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.DecimalFormat;
+
 public class MsgBolusProgress extends DanaRMessage {
     private static Logger log = LoggerFactory.getLogger(MsgBolusProgress.class);
+    public static final DecimalFormat bolusNumberFormat = new DecimalFormat("0.0");
+
     private BolusUI bolusUI;
+    private String _id;
+    private int amount;
 
     public int progress = 0;
 
@@ -20,9 +27,11 @@ public class MsgBolusProgress extends DanaRMessage {
         super(cmdName);
     }
 
-    public MsgBolusProgress(BolusUI bolusUI) {
+    public MsgBolusProgress(BolusUI bolusUI, int amount, String _id) {
         this();
         this.bolusUI = bolusUI;
+        this.amount = amount;
+        this. _id = _id;
     }
 
     public void handleMessage(byte[] bytes) {
@@ -30,6 +39,7 @@ public class MsgBolusProgress extends DanaRMessage {
         log.debug("remaining "+progress);
         bolusUI.bolusDeliveredAmountSoFar = progress/100d;
         bolusUI.bolusDelivering();
+        MainApp.getNSClient().sendTreatmentStatusUpdate(this._id, "Delivering " + bolusNumberFormat.format((amount - progress) / 100d) + "U");
     }
 
 

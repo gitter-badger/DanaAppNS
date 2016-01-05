@@ -17,7 +17,8 @@
                   android:paddingRight="@dimen/activity_horizontal_margin"
                   android:paddingTop="@dimen/activity_vertical_margin"
                   tools:context=".MainActivity"
-                  android:orientation="vertical">
+                  android:orientation="vertical"
+        android:weightSum="1">
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                       xmlns:tools="http://schemas.android.com/tools"
@@ -127,126 +128,40 @@
                 android:text="@string/uRemainingInit"
                 android:textSize="@dimen/font_size"/>
 
-            <Button
-                style="?android:attr/buttonStyleSmall"
-                android:id="@+id/buttonTB"
-                android:text="TEMP"
-                android:layout_weight="1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                />
         </LinearLayout>
 
-
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                      xmlns:tools="http://schemas.android.com/tools"
-                      android:layout_width="match_parent"
-                      android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/lastBolusAmount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="15dp"
-                android:background="@drawable/edit_text_bg"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:layout_weight="1"
-                android:text="@string/uRemainingInit"
-                android:textSize="@dimen/font_size"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/lastBolusTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="15dp"
-                android:background="@drawable/edit_text_bg"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:layout_weight="1"
-                android:text="@string/uRemainingInit"
-                android:textSize="@dimen/font_size"/>
-
-            <Button
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="carbs"
-                android:layout_weight="0.30"
-                android:id="@+id/carbsButton"/>
-
-        </LinearLayout>
-
-
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                      xmlns:tools="http://schemas.android.com/tools"
-                      android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:orientation="vertical"
-            >
-
-
-            <LinearLayout
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="1dp"
-                android:orientation="horizontal"
-                android:layout_marginLeft="0dp"
-                android:layout_marginRight="0dp"
-                android:id="@+id/bolusLayout">
-
-                <TextView
-                    android:id="@+id/bolusStatus"
-                    android:text="No previous bolus"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_weight="3"
-                    android:textSize="20sp"
-                    android:paddingRight="5sp"
-                    android:gravity="center_vertical|right"
-                    />
-
-                <Button
-                    style="?android:attr/buttonStyleSmall"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="bolus"
-                    android:layout_weight="2.03"
-                    android:id="@+id/bolusButton"/>
-            </LinearLayout>
-
-            <ProgressBar
-                android:id="@+id/bolusProgressBar"
-                android:layout_height="4dp"
-                android:layout_width="match_parent"
-                style="@android:style/Widget.ProgressBar.Horizontal"
-                android:layout_alignParentBottom="true"
-                android:layout_margin="1dp"
-                android:minHeight="3dp"
-                android:maxHeight="5dp"
-                />
-
-
-        </LinearLayout>
-
-
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                      xmlns:tools="http://schemas.android.com/tools"
-                      android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:orientation="vertical"
-            >
+                android:text="Nightcout connection"
+                android:id="@+id/nsConnectionLabel"
+                android:textSize="16dp"/>
 
             <TextView
-                android:id="@+id/lowSuspendData"
-                android:text="..."
+                android:id="@+id/nsConnection"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
-                android:textSize="13sp"
-                android:gravity="center_vertical"
-                />
+                android:background="@drawable/edit_text_bg"
+                android:text="Not connected"
+                android:gravity="center_vertical|right"
+                android:textSize="16dp"/>
+
+        </LinearLayout>
+
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                      xmlns:tools="http://schemas.android.com/tools"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:orientation="vertical"
+            >
+
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                           xmlns:tools="http://schemas.android.com/tools"
                           android:layout_width="match_parent"
@@ -254,12 +169,19 @@
                           android:orientation="horizontal">
 
                 <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Low Suspend"
+                    android:id="@+id/lowSuspendLabel"
+                    android:textSize="16dp"/>
+
+                <TextView
                     android:id="@+id/lowSuspendStatus"
                     android:text="..."
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="3"
-                    android:textSize="13sp"
+                    android:textSize="16dp"/>
                     android:gravity="center_vertical"
                     />
                 <Switch
@@ -270,14 +192,32 @@
                     />
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/lowSuspendData"
+                android:text="..."
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:textSize="13sp"
+                android:gravity="center_vertical"
+                />
+
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                           xmlns:tools="http://schemas.android.com/tools"
                           android:layout_width="match_parent"
                           android:layout_height="wrap_content"
                           android:orientation="horizontal"
                 >
+
                 <TextView
-                    android:id="@+id/lowSuspendStatusTextOpenAps"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="OpenAPS"
+                    android:textSize="16dp"/>
+                    android:id="@+id/openApsLabel" />
+
+                <TextView
+                    android:id="@+id/openApsStatus"
                     android:text="..."
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -294,33 +234,28 @@
                     />
 
             </LinearLayout>
+
         </LinearLayout>
-
-        <ListView xmlns:tools="http://schemas.android.com/tools"
-                  android:id="@+id/bolusListView"
-                  android:layout_width="match_parent"
-                  android:layout_height="120px"
-                  tools:listitem="@layout/bolus_row"
-
-            >
-        </ListView>
-
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                       xmlns:tools="http://schemas.android.com/tools"
                       android:layout_width="match_parent"
                       android:layout_height="wrap_content"
-                      android:orientation="vertical"
+                      android:orientation="horizontal"
             >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="IOB"
+                android:textSize="16dp"/>
+                android:id="@+id/iobLabel" />
 
             <TextView
                 android:id="@+id/iob"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="15dp"
                 android:background="@drawable/edit_text_bg"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
                 android:layout_weight="1"
                 android:text="IOB 0.0"
                 android:gravity="center_vertical|right"
@@ -329,37 +264,151 @@
         </LinearLayout>
 
 
-        <ListView xmlns:tools="http://schemas.android.com/tools"
-                  android:id="@+id/tempBasalListView"
-                  android:layout_width="match_parent"
-                  android:layout_height="120px"
-                  tools:listitem="@layout/tempbasal_row"
-
-            >
-        </ListView>
-
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                       xmlns:tools="http://schemas.android.com/tools"
                       android:layout_width="match_parent"
                       android:layout_height="wrap_content"
-                      android:orientation="vertical"
+                      android:orientation="horizontal"
             >
 
             <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Basal IOB"
+                android:textSize="16dp"/>
+                android:id="@+id/basal_iobLabel" />
+
+            <TextView
                 android:id="@+id/basal_iob"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:background="@drawable/edit_text_bg"
+                android:text="bIOB 0.0 0.0"
+                android:gravity="center_vertical|right"
+                android:textSize="16dp"/>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+        <TextView
+                android:id="@+id/lastBolusAmount"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="15dp"
                 android:background="@drawable/edit_text_bg"
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp"
                 android:layout_weight="1"
-                android:text="bIOB 0.0 0.0"
-                android:gravity="center_vertical|right"
-                android:textSize="16dp"/>
+                android:text="BolusAmount"
+                android:textSize="@dimen/font_size" />
+
+            <TextView
+                android:id="@+id/lastBolusTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="15dp"
+                android:background="@drawable/edit_text_bg"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:layout_weight="1"
+                android:text="BolusTime"
+                android:textSize="@dimen/font_size" />
+        </LinearLayout>
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="1dp"
+            android:orientation="horizontal"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:id="@+id/linearLayout" >
+
+            <TextView
+                android:id="@+id/bolusStatus"
+                android:text="No previous bolus"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:textSize="20sp"
+                android:paddingRight="5sp"
+                android:gravity="center_vertical|right" />
+
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="bolus"
+                android:layout_weight="2.03"
+                android:id="@+id/bolusButton" />
+        </LinearLayout>
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <ProgressBar
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:id="@+id/bolusProgressBar"
+                android:layout_height="4dp"
+                android:layout_width="match_parent"
+                android:layout_alignParentBottom="true"
+                android:layout_margin="1dp"
+                android:minHeight="3dp"
+                android:maxHeight="5dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Test action"
+                android:id="@+id/testButton" />
 
         </LinearLayout>
+
+        <ListView xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/bolusListView"
+            android:layout_width="match_parent"
+            android:layout_height="120px"
+            tools:listitem="@layout/bolus_row"
+
+            >
+        </ListView>
+        <ListView xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/tempBasalListView"
+            android:layout_width="match_parent"
+            android:layout_height="120px"
+            tools:listitem="@layout/tempbasal_row"
+
+            >
+        </ListView>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:id="@+id/buttonTB"
+                android:text="TEMP"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+        </LinearLayout>
+
     </LinearLayout>
 
     <android.support.design.widget.NavigationView
